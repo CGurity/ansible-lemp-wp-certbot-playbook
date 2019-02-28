@@ -1,0 +1,68 @@
+---
+# tasks file for php
+
+- name: Install php and basic extensions
+  apt:
+    name: "{{ item }}"
+    state: present
+  become: yes
+  with_items:
+    - php{{php_version}}
+    - php{{php_version}}-mysql
+    - php{{php_version}}-gd
+    - php-ssh2
+    # - php7.2-mcrypt
+    - php-fpm
+
+- name: Create group for the specific domain
+  group:
+    name: "{{domain}}"
+    state: present
+
+- name: Create user for the domain and register it to the correspondent group
+  user:
+    name: "{{domain}}"
+    group: "{{domain}}"
+
+- name: Create directory for php sites
+  file:
+    path: /var/www/php/
+    state: directory
+
+- name: Create directory for site files
+  file:
+    path: /var/www/php/{{domain}}
+    state: directory
+
+- name: Delete directory for static site being replaced
+  file:
+    path: /var/www/static/{{domain}}
+    state: absent
+
+- name: Create php dummy file
+  template: "src=../templates/index-php.php dest=/var/www/php/{{domain}}/index.php owner=www-data group=www-data mode=0644"
+  become: yes
+
+- name: Set up fpm pool
+  template: "src=../templates/pool-fpm.conf dest=/etc/php/{{php_version}}/fpm/pool.d/{{domain}}.conf"
+  become: yes
+
+- name: Make domain user owner of directory with site
+  file: dest=/var/www/php/{{domain}} owner={{domain}} group={{domain}} mode=u=rwX,g=rX,o=rX recurse=yes
+  notify:
+    - restart nginx
+    - restart php-fpm
+
+- name: Re-create nginx config file
+  template: "src=../templates/default-site-php-http.conf dest=/etc/nginx/sites-available/{{domain}} owner=www-data group=www-data mode=0644"
+  become: yes
+
+- name: Enable site
+  file: src=/etc/nginx/sites-available/{{domain}} dest=/etc/nginx/sites-enabled/{{domain}} owner=www-data group=www-data state=link
+  notify:
+    - restart nginx
+  become: yes
+
+- name: Store variable with site type
+  shell: echo "php"
+  register: site

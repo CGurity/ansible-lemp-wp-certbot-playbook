@@ -1,0 +1,62 @@
+---
+# tasks file for nginx
+
+- name: Update apt cache
+  apt: update_cache=yes cache_valid_time=3600
+  become: yes
+
+- name: Install nginx
+  apt: name={{ item }} state=present
+  become: yes
+  with_items:
+    - nginx
+
+- name: Open port 80 in iptables
+  command: iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+
+- name: Start nginx
+  become: yes
+  service:
+    name: nginx
+    state: started
+
+- name: Create directory for static sites
+  file:
+    path: /var/www/static/
+    state: directory
+
+- name: Create directory for site files
+  file:
+    path: /var/www/static/{{domain}}
+    state: directory
+
+- name: Create html dummy file
+  template: "src=../templates/index-http.html dest=/var/www/static/{{domain}}/index.html owner=www-data group=www-data mode=0644"
+  become: yes
+
+- name: Create nginx config file
+  template: "src=../templates/default-site-http.conf dest=/etc/nginx/sites-available/{{domain}} owner=www-data group=www-data mode=0644"
+  become: yes
+
+- name: Enable site
+  file: src=/etc/nginx/sites-available/{{domain}} dest=/etc/nginx/sites-enabled/{{domain}} owner=www-data group=www-data state=link
+  notify:
+    - restart nginx
+  become: yes
+
+- name: Clean default conf 1
+  file:
+    state: absent
+    path: "{{ item }}"
+  with_items:
+    - /etc/nginx/sites-available/default
+    - /etc/nginx/sites-enabled/default
+  become: yes
+
+- name: Purge Apache2 if installed
+  apt: name=apache2 state=absent
+  become: yes
+
+- name: Store variable with site type
+  shell: echo "static"
+  register: site

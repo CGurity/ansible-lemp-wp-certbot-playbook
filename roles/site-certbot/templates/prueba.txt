@@ -1,0 +1,1 @@
+Este sitio es {{ site.stdout }}

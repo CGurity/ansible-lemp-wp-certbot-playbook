@@ -1,0 +1,12 @@
+- hosts: webservers
+  vars:
+    - ansible_connection: ssh
+    - ansible_user: root
+  # become: True
+  # become_method: sudo
+  roles:
+    - site-static
+    - site-php
+    - site-php-mysql
+    # - site-wordpress
+    # - site-certbot
