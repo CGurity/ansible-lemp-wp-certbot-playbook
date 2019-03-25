@@ -3,5 +3,5 @@
   service: name=nginx state=restarted
   become: yes
 
-- name: restart php5-fpm
-  service: name=php5-fpm state=restarted
+- name: restart php{{php_version}}-fpm
+  service: name=php{{php_version}}-fpm state=restarted

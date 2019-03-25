@@ -6,7 +6,7 @@
   with_items:
     - mysql-server
     - python-mysqldb
-    - php7.2-mysql
+    - php{{php_version}}-mysql
 
 - name: Start the MySQL service
   action: service name=mysql state=started

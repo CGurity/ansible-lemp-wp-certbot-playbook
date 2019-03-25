@@ -8,5 +8,5 @@
     - site-static
     - site-php
     - site-php-mysql
-    # - site-wordpress
+    - site-wordpress
     # - site-certbot
