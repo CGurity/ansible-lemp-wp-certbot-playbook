@@ -101,7 +101,7 @@
     minute: "50"
     hour: "10"
     user: "{{domain}}"
-    job: "/usr/local/bin/wp plugin update --path=/var/www/wordpress/{{domain}}/ >> /var/www/wordpress/update_logs/{{domain}}.log"
+    job: "/usr/local/bin/wp plugin update --all --path=/var/www/wordpress/{{domain}}/ >> /var/www/wordpress/update_logs/{{domain}}.log"
 
 - name: Create cronjob for cleaning logs weekly
   cron:
