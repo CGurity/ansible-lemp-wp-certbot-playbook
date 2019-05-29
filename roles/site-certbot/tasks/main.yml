@@ -11,25 +11,25 @@
   become: yes
 
 - name: Install certificate
-  shell: certbot --nginx --agree-tos --email {{certbot_mail}} -n -d {{domain}} -d www.{{domain}}
+  shell: certbot --nginx -q -n --agree-tos --redirect --hsts --email {{certbot_mail}} -d {{domain}} -d www.{{domain}}
   register: site
 
-- name: Re-create nginx config file (PHP or Wordpress)
-  template: "src=../templates/php-wordpress-nginx-certbot.conf dest=/etc/nginx/sites-available/{{domain}} owner=www-data group=www-data mode=0644"
-  notify:
-    - restart nginx
-  # become: yes
-  when: site.stdout == "wordpress" or site.stdout == "php"
+# - name: Re-create nginx config file (PHP or Wordpress)
+#  template: "src=../templates/php-wordpress-nginx-certbot.conf dest=/etc/nginx/sites-available/{{domain}} owner=www-data group=www-data mode=0644"
+#  notify:
+#    - restart nginx
+#  # become: yes
+#  when: site.stdout == "wordpress" or site.stdout == "php"
 
-- name: Re-create nginx config file (Static)
-  template: "src=../templates/static-nginx-certbot.conf dest=/etc/nginx/sites-available/{{domain}} owner=www-data group=www-data mode=0644"
-  notify:
-    - restart nginx
-  become: yes
-  when: site.stdout == "static"
+# - name: Re-create nginx config file (Static)
+#  template: "src=../templates/static-nginx-certbot.conf dest=/etc/nginx/sites-available/{{domain}} owner=www-data group=www-data mode=0644"
+#  notify:
+#    - restart nginx
+#  become: yes
+#  when: site.stdout == "static"
 
-- name: Enable site
-  file: src=/etc/nginx/sites-available/{{domain}} dest=/etc/nginx/sites-enabled/{{domain}} owner=www-data group=www-data state=link
-  notify:
-    - restart nginx
-  become: yes
+# - name: Enable site
+#  file: src=/etc/nginx/sites-available/{{domain}} dest=/etc/nginx/sites-enabled/{{domain}} owner=www-data group=www-data state=link
+#  notify:
+#    - restart nginx
+#  become: yes
