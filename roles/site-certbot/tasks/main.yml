@@ -10,9 +10,10 @@
     state: present
   become: yes
 
+# Testing - add webroot to command
 - name: Install certificate
-  shell: certbot --nginx -q -n --agree-tos --redirect --hsts --email {{certbot_mail}} -d {{domain}} -d www.{{domain}}
-  register: site
+  shell: certbot --nginx -n --agree-tos --redirect --email {{certbot_mail}} -d {{domain}} -d www.{{domain}} --webroot-path /var/www/{{ site.stdout }}/{{ domain }}/
+#   register: site
 
 # - name: Re-create nginx config file (PHP or Wordpress)
 #  template: "src=../templates/php-wordpress-nginx-certbot.conf dest=/etc/nginx/sites-available/{{domain}} owner=www-data group=www-data mode=0644"

@@ -2,11 +2,11 @@
 - name: Install mysql and related tools
   become: yes
   apt:
-    name: "{{ item }}"
-  with_items:
-    - mysql-server
-    - python-mysqldb
-    - php{{php_version}}-mysql
+    state: present
+    pkg:
+      - mysql-server
+      - python-mysqldb
+      - php{{php_version}}-mysql
 
 - name: Start the MySQL service
   action: service name=mysql state=started
@@ -33,15 +33,16 @@
 - name: Create mysql database
   become: true
   mysql_db:
-    name: "{{ domain | replace('.','_') }}"
+    name: "{{ domain | replace('.','_') | replace('-','_') }}"
     state: present
 
 - name: Create mysql user
   become: true
+  become_user: root
   mysql_user:
-    name: "{{ domain | replace('.','_') }}"
-    password: "{{ lookup('password', 'credentials/' + domain + '/mysql_wp_password.txt') }}"
-    priv: "{{ domain | replace('.','_') }}.*:ALL"
+    name: "{{ domain | replace('.','_')| replace('-','_') }}"
+    password: "{{ lookup('password', 'credentials/' + domain + '/mysql_user_password.txt') }}"
+    priv: "{{ domain | replace('.','_')| replace('-','_') }}.*:ALL"
 
 # - name: Delete anonymous MySQL server user for $server_hostname
 #   become: true

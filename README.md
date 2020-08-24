@@ -31,7 +31,7 @@ $ git clone https://github.com/cguerrave/ansible-lemp-wp-certbot-playbook.git
 $ cd /ansible-lemp-wp-certbot-playbook
 ```
 
-2. Depending of what do you want to install and configure comment the corresponding lines in the playbook.yml file, some examples below
+2. Depending of what do you want to install and configure, set the relevant variables and comment the corresponding lines in the playbook.yml file, some examples below
 
 - For a static site with HTTPS:
 ```yml
@@ -74,10 +74,8 @@ and edit.
 1.2.3.4 ansible_ssh_user=root ansible_ssh_private_key_file=$HOME/.ssh/id_rsa
 ```
 
-4. Edit the file ```group_vars/all``` and set up the domain, the target port and certbot e-mail among other variables.
+4. run the playbook using ```ansible-playbook playbook.yml -i hosts```.
 
-5. run the playbook using ```ansible-playbook playbook.yml -i hosts```.
+5. If you selected a website with MySQL look in the folder ```credentials/``` for the MySQL users and passwords for the users root and the specific site database user.
 
-6. If you selected a website with MySQL look in the folder ```credentials/``` for the MySQL users and passwords for the users root and the specific site database user.
-
-7. Access your server IP or domain to check that everything is in order.
+6. Access your server IP or domain to check that everything is in order.

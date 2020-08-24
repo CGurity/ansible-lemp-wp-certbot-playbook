@@ -79,7 +79,7 @@
   command: "chdir=/var/www/wordpress/{{domain}} wp core install --url={{domain}} --title={{domain}} --admin_user={{wpuser}} --admin_password={{ lookup('password', 'credentials/' + domain + '/wp_'+ wpuser +'_password.txt') }} --admin_email={{wpmail}}"
   become: yes
   become_user: "{{domain}}"
-  become_method: su
+  become_method: sudo
 
 - name: Install Wordfence
   command: "chdir=/var/www/wordpress/{{domain}} wp plugin install wordfence --activate"

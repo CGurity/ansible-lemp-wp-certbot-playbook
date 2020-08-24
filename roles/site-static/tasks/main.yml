@@ -6,11 +6,12 @@
   become: yes
 
 - name: Install nginx and curl
-  apt: name={{ item }} state=present
   become: yes
-  with_items:
-    - nginx
-    - curl
+  apt: 
+    state: present
+    pkg:
+      - nginx
+      - curl
 
 - name: Open port 80 in iptables
   command: iptables -A INPUT -p tcp --dport 80 -j ACCEPT

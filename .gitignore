@@ -10,3 +10,4 @@
 hosts
 credentials/*
 !credentials/.gitkeep
+cg.yml

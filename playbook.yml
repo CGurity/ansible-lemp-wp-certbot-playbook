@@ -2,8 +2,22 @@
   vars:
     - ansible_connection: ssh
     - ansible_user: root
-  # become: True
-  # become_method: sudo
+    - domain: example.com 
+    - ansible_port: 22
+    - mysql_port: 3306
+    - mysql_root_password: root
+    - php_version: 7.3 # Check in your server
+    # Wordpress config
+    - auto_up_disable: true
+    - core_update_level: true
+    # For WP-CLI
+    - root_bin: /usr/local/bin
+    - wpuser: supervisor
+    - wpmail: mail@example.com
+    # For Certbot/LetsEncrypt
+    - certbot_mail: mail@example.com
+    # become: True
+    # become_method: sudo
   roles:
     - site-static
     - site-php

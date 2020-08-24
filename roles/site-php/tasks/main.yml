@@ -2,17 +2,15 @@
 # tasks file for php
 
 - name: Install php and basic extensions
-  apt:
-    name: "{{ item }}"
-    state: present
   become: yes
-  with_items:
-    - php{{php_version}}
-    - php{{php_version}}-mysql
-    - php{{php_version}}-gd
-    - php-ssh2
-    # - php7.2-mcrypt
-    - php-fpm
+  apt:
+    state: present
+    pkg:
+      - php{{php_version}}
+      - php{{php_version}}-mysql
+      - php{{php_version}}-gd
+      - php-ssh2
+      - php-fpm
 
 - name: Create group for the specific domain
   group:
@@ -61,6 +59,7 @@
   file: src=/etc/nginx/sites-available/{{domain}} dest=/etc/nginx/sites-enabled/{{domain}} owner=www-data group=www-data state=link
   notify:
     - restart nginx
+    - restart php-fpm
   become: yes
 
 - name: Store variable with site type
