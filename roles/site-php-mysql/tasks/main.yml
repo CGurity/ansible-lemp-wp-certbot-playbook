@@ -5,8 +5,13 @@
     state: present
     pkg:
       - mysql-server
-      - python-mysqldb
+      - python3-mysqldb
       - php{{php_version}}-mysql
+
+- name: Copy .my.cnf file with root password credentials
+  become: true
+  become_user: root
+  template: src=roles/site-php-mysql/templates/.my.cnf dest=/root/.my.cnf owner=root mode=0600
 
 - name: Start the MySQL service
   action: service name=mysql state=started
@@ -25,11 +30,6 @@
     - ::1
     - localhost
 
-- name: Copy .my.cnf file with root password credentials
-  become: true
-  become_user: root
-  template: src=roles/site-php-mysql/templates/.my.cnf dest=/root/.my.cnf owner=root mode=0600
-
 - name: Create mysql database
   become: true
   mysql_db:
@@ -43,10 +43,6 @@
     name: "{{ domain | replace('.','_')| replace('-','_') }}"
     password: "{{ lookup('password', 'credentials/' + domain + '/mysql_user_password.txt') }}"
     priv: "{{ domain | replace('.','_')| replace('-','_') }}.*:ALL"
-
-# - name: Delete anonymous MySQL server user for $server_hostname
-#   become: true
-#   action: mysql_user user="" host="{{ server_hostname }}" state="absent"
 
 - name: Delete anonymous MySQL server user for localhost
   become: true

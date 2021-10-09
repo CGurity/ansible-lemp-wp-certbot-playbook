@@ -6,13 +6,13 @@
   apt:
     pkg:
       - certbot
-      - python-certbot-nginx
+      - python3-certbot-nginx
     state: present
   become: yes
 
 # Testing - add webroot to command
 - name: Install certificate
-  shell: certbot --nginx -n --agree-tos --redirect --email {{certbot_mail}} -d {{domain}} -d www.{{domain}} --webroot-path /var/www/{{ site.stdout }}/{{ domain }}/
+  shell: certbot --nginx -n --agree-tos --redirect --email {{certbot_mail}} -d {{domain}} -d www.{{domain}} --webroot-path /var/www/wordpress/{{ domain }}/
 #   register: site
 
 # - name: Re-create nginx config file (PHP or Wordpress)
