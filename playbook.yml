@@ -1,21 +1,22 @@
 - hosts: webservers
   vars:
-    - ansible_connection: ssh
-    - ansible_user: root
-    - domain: example.com 
-    - ansible_port: 22
-    - mysql_port: 3306
-    - mysql_root_password: root
-    - php_version: 7.3 # Check in your server
+    ansible_connection: ssh
+    ansible_user: root
+    domain: example.com
+    include_www: False
+    ansible_port: 22
+    mysql_port: 3306
+    mysql_root_password: root
+    php_version: 8.3 # Check in your server
     # Wordpress config
-    - auto_up_disable: true
-    - core_update_level: true
+    auto_up_disable: true
+    core_update_level: true
     # For WP-CLI
-    - root_bin: /usr/local/bin
-    - wpuser: supervisor
-    - wpmail: mail@example.com
+    root_bin: /usr/local/bin
+    wpuser: supervisor
+    wpmail: mail@example.com
     # For Certbot/LetsEncrypt
-    - certbot_mail: mail@example.com
+    certbot_mail: example@example.com
     # become: True
     # become_method: sudo
   roles:
@@ -23,4 +24,4 @@
     - site-php
     - site-php-mysql
     - site-wordpress
-    # - site-certbot
+    - site-certbot

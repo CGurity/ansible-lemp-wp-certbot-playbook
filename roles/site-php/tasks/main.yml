@@ -22,23 +22,8 @@
     name: "{{domain}}"
     group: "{{domain}}"
 
-- name: Create directory for php sites
-  file:
-    path: /var/www/php/
-    state: directory
-
-- name: Create directory for site files
-  file:
-    path: /var/www/php/{{domain}}
-    state: directory
-
-- name: Delete directory for static site being replaced
-  file:
-    path: /var/www/static/{{domain}}
-    state: absent
-
 - name: Create php dummy file
-  template: "src=../templates/index-php.php dest=/var/www/php/{{domain}}/index.php owner=www-data group=www-data mode=0644"
+  template: "src=../templates/index-php.php dest=/var/www/{{domain}}/index.php owner=www-data group=www-data mode=0644"
   become: yes
 
 - name: Set up fpm pool
@@ -46,7 +31,7 @@
   become: yes
 
 - name: Make domain user owner of directory with site
-  file: dest=/var/www/php/{{domain}} owner={{domain}} group={{domain}} mode=u=rwX,g=rX,o=rX recurse=yes
+  file: dest=/var/www/{{domain}} owner={{domain}} group={{domain}} mode=u=rwX,g=rX,o=rX recurse=yes
   notify:
     - restart nginx
     - restart php-fpm

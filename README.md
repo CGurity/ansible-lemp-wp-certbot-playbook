@@ -10,17 +10,19 @@ This playbook is based on the [WordPress + Nginx Ansible Playbook](https://githu
 
 ### Considerations
 
-- For every site the playbook will asociate any domain to be served with the exact domain configured in global vars and it "www." version
-- For php/wordpress sites a new user will be created to handle all the php operations for security reasons, if one website is compromised in the php level, it won't have access to the other instances minimizing the damage.
+- For every site the playbook will asociate any domain to be served with the exact domain configured in global vars and its "www." version. The "www." version can be skipped in the playbook configuration, this is especially useful if configuring sa subdomain.
+- For php/wordpress sites a new user will be created to handle all the php operations for security reasons, if one website is compromised in the php level, it won't have access to the other instances, reducing the damage.
 - For each website with MySQL a user will be created with a random password, this information  will be reported back to the user for further use.
-- All the static websites files will be stored in ```/var/www/static/site_domain/```, all the php websites files in ```/var/www/php/site_domain/``` and the wordpress files will be in ```/var/www/wordpress/site_domain/```.
-- For the wordpress site the playbook will install WP-CLI to manage unnatended install, set up cronjobs to update the Wordpress core, plugins and themes daily and install Wordfence.
+- All websites files will be stored in ```/var/www/site_domain/```.
+- For the wordpress site the playbook will install WP-CLI to manage an unnatended install, set up cronjobs to update the Wordpress core, plugins and themes daily and install Wordfence.
+- **IMPORTANT:** For all PHP sites (including WordPress), the resulting permission structure for the directory is set up to "u=rwX,g=rX,o=rX" recursively. Please be mindful of this and check the documentation of the tool you want to deploy to make sure if you would need to adjust permissions further to configure your tool correctly and securely.
+- **ALSO IMPORTANT:** Keep in mind that certain tools will require especial configurations on the Nginx configuration. Again, please review the documentation of the tool you want to deploy to ensure you consider any further changes in the configuration. Overlooking this might result in serious security issues, like exposing secrets and unintended interfaces.
 
 ### Requirements
 - Ansible 2.0.0 or newer
-- Ubuntu 16.04 or Debian 9 (could work on other Debian based distros)
-- SSH access to the target with root user (configured for key access)
-- Point your DNS records to the IP of your target server (remember that the playbook considers also the www.domain.com url)
+- Ubuntu 16.04 or Debian 9 (could work on other Debian based distros, tested the last time in Ubuntu 24.04)
+- SSH access to the target with root user (configured for ssh key access)
+- Point your DNS records of the (sub)domain to the IP of your target server (remember that the playbook also might consider the www.domain.com url)
 
 ### Instructions:
 

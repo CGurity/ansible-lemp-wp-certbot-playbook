@@ -1,18 +1,11 @@
 ---
-- name: Create directory for wordpress sites
+- name: Delete index.php and index.html generated in previous tasks
   file:
-    path: /var/www/wordpress/
-    state: directory
-
-- name: Create directory for site files
-  file:
-    path: /var/www/wordpress/{{domain}}
-    state: directory
-
-- name: delete directory for php site being replaced
-  file:
-    path: /var/www/php/{{domain}}
+    path: '{{ item }}'
     state: absent
+  with_items:
+    - /var/www/{{domain}}/index.php
+    - /var/www/{{domain}}/index.html
 
 - name: Download WordPress
   get_url:
@@ -27,7 +20,7 @@
 - name: Syncronize Wordpress install files with server directory
   synchronize:
     src: /tmp/wordpress/
-    dest: /var/www/wordpress/{{domain}}/
+    dest: /var/www/{{domain}}/
   delegate_to: "{{ inventory_hostname }}"
 
 - name: delete tmp directory for wordpress install files
@@ -46,11 +39,11 @@
   become: no
 
 - name: Add wp-config
-  template: "src=wp-config.php dest=/var/www/wordpress/{{domain}}/wp-config.php"
+  template: "src=wp-config.php dest=/var/www/{{domain}}/wp-config.php"
   become: yes
 
 - name: Make domain user owner of directory with site
-  file: dest=/var/www/wordpress/{{domain}} owner={{domain}} group={{domain}} mode=u=rwX,g=rX,o=rX recurse=yes
+  file: dest=/var/www/{{domain}} owner={{domain}} group={{domain}} mode=u=rwX,g=rX,o=rX recurse=yes
 
 - name: Re-create nginx config file
   template: "src=../templates/default-site-wordpress-http.conf dest=/etc/nginx/sites-available/{{domain}} owner=www-data group=www-data mode=0644"
@@ -76,13 +69,13 @@
   when: not wpcli_exist.stat.exists
 
 - name: Initialize Wordpress site
-  command: "chdir=/var/www/wordpress/{{domain}} wp core install --url={{domain}} --title={{domain}} --admin_user={{wpuser}} --admin_password={{ lookup('password', 'credentials/' + domain + '/wp_'+ wpuser +'_password.txt') }} --admin_email={{wpmail}}"
+  command: "chdir=/var/www/{{domain}} wp core install --url={{domain}} --title={{domain}} --admin_user={{wpuser}} --admin_password={{ lookup('password', 'credentials/' + domain + '/wp_'+ wpuser +'_password.txt') }} --admin_email={{wpmail}}"
   become: yes
   become_user: "{{domain}}"
   become_method: sudo
 
 - name: Install Wordfence
-  command: "chdir=/var/www/wordpress/{{domain}} wp plugin install wordfence --activate"
+  command: "chdir=/var/www/{{domain}} wp plugin install wordfence --activate"
   become: yes
   become_user: "{{domain}}"
   become_method: su
@@ -93,7 +86,7 @@
     minute: "40"
     hour: "10"
     user: "{{domain}}"
-    job: "/usr/local/bin/wp core update --path=/var/www/wordpress/{{domain}}/ >> /var/www/wordpress/update_logs/{{domain}}.log"
+    job: "/usr/local/bin/wp core update --path=/var/www/{{domain}}/ >> /var/www/update_logs/{{domain}}.log"
 
 - name: Create cronjob for Wordpress plugins update
   cron:
@@ -101,7 +94,7 @@
     minute: "50"
     hour: "10"
     user: "{{domain}}"
-    job: "/usr/local/bin/wp plugin update --all --path=/var/www/wordpress/{{domain}}/ >> /var/www/wordpress/update_logs/{{domain}}.log"
+    job: "/usr/local/bin/wp plugin update --all --path=/var/www/{{domain}}/ >> /var/www/update_logs/{{domain}}.log"
 
 - name: Create cronjob for cleaning logs weekly
   cron:
@@ -110,7 +103,7 @@
     hour: "10"
     weekday: "7"
     user: "{{domain}}"
-    job: "/bin/echo '' > /var/www/wordpress/update_logs/{{domain}}.log"
+    job: "/bin/echo '' > /var/www/update_logs/{{domain}}.log"
 
 - name: Store variable with site type
   shell: echo "wordpress"

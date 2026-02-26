@@ -22,18 +22,13 @@
     name: nginx
     state: started
 
-- name: Create directory for static sites
-  file:
-    path: /var/www/static/
-    state: directory
-
 - name: Create directory for site files
   file:
-    path: /var/www/static/{{domain}}
+    path: /var/www/{{domain}}
     state: directory
 
 - name: Create html dummy file
-  template: "src=../templates/index-http.html dest=/var/www/static/{{domain}}/index.html owner=www-data group=www-data mode=0644"
+  template: "src=../templates/index-http.html dest=/var/www/{{domain}}/index.html owner=www-data group=www-data mode=0644"
   become: yes
 
 - name: Create nginx config file

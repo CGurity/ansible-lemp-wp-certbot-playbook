@@ -1,69 +1,70 @@
 <?php
 /**
- * The base configurations of the WordPress.
+ * The base configuration for WordPress
  *
- * This file has the following configurations: MySQL settings, Table Prefix,
- * Secret Keys, WordPress Language, and ABSPATH. You can find more information
- * by visiting {@link http://codex.wordpress.org/Editing_wp-config.php Editing
- * wp-config.php} Codex page. You can get the MySQL settings from your web host.
+ * The wp-config.php creation script uses this file during the installation.
+ * You don't have to use the website, you can copy this file to "wp-config.php"
+ * and fill in the values.
  *
- * This file is used by the wp-config.php creation script during the
- * installation. You don't have to use the web site, you can just copy this file
- * to "wp-config.php" and fill in the values.
+ * This file contains the following configurations:
+ *
+ * * Database settings
+ * * Secret keys
+ * * Database table prefix
+ * * ABSPATH
+ *
+ * @link https://developer.wordpress.org/advanced-administration/wordpress/wp-config/
  *
  * @package WordPress
  */
 
-// ** MySQL settings - You can get this info from your web host ** //
+// ** Database settings - You can get this info from your web host ** //
 /** The name of the database for WordPress */
-define('DB_NAME', '{{ domain | replace('.','_') | replace('-','_') }}');
+define( 'DB_NAME', '{{ domain | replace('.','_') | replace('-','_') }}' );
 
-/** MySQL database username */
-define('DB_USER', '{{ domain | replace('.','_') | replace('-','_') }}');
+/** Database username */
+define( 'DB_USER', '{{ domain | replace('.','_') | replace('-','_') }}' );
 
-/** MySQL database password */
-define('DB_PASSWORD', '{{ lookup('password', 'credentials/' + domain + '/mysql_user_password.txt') }}');
+/** Database password */
+define( 'DB_PASSWORD', '{{ lookup('password', 'credentials/' + domain + '/mysql_user_password.txt') }}' );
 
-/** MySQL hostname */
-define('DB_HOST', 'localhost');
+/** Database hostname */
+define( 'DB_HOST', 'localhost' );
 
-/** Database Charset to use in creating database tables. */
-define('DB_CHARSET', 'utf8');
+/** Database charset to use in creating database tables. */
+define( 'DB_CHARSET', 'utf8mb4' );
 
-/** The Database Collate type. Don't change this if in doubt. */
-define('DB_COLLATE', '');
+/** The database collate type. Don't change this if in doubt. */
+define( 'DB_COLLATE', '' );
 
 /**#@+
- * Authentication Unique Keys and Salts.
+ * Authentication unique keys and salts.
  *
- * Change these to different unique phrases!
- * You can generate these using the {@link https://api.wordpress.org/secret-key/1.1/salt/ WordPress.org secret-key service}
- * You can change these at any point in time to invalidate all existing cookies. This will force all users to have to log in again.
+ * Change these to different unique phrases! You can generate these using
+ * the {@link https://api.wordpress.org/secret-key/1.1/salt/ WordPress.org secret-key service}.
+ *
+ * You can change these at any point in time to invalidate all existing cookies.
+ * This will force all users to have to log in again.
  *
  * @since 2.6.0
  */
-
 {{ wp_salt.stdout }}
 
 /**#@-*/
 
 /**
- * WordPress Database Table prefix.
+ * WordPress database table prefix.
  *
- * You can have multiple installations in one database if you give each a unique
- * prefix. Only numbers, letters, and underscores please!
- */
-$table_prefix  = 'wp_';
-
-/**
- * WordPress Localized Language, defaults to English.
+ * You can have multiple installations in one database if you give each
+ * a unique prefix. Only numbers, letters, and underscores please!
  *
- * Change this to localize WordPress. A corresponding MO file for the chosen
- * language must be installed to wp-content/languages. For example, install
- * de_DE.mo to wp-content/languages and set WPLANG to 'de_DE' to enable German
- * language support.
+ * At the installation time, database tables are created with the specified prefix.
+ * Changing this value after WordPress is installed will make your site think
+ * it has not been installed.
+ *
+ * @link https://developer.wordpress.org/advanced-administration/wordpress/wp-config/#table-prefix
  */
-define('WPLANG', '');
+$table_prefix = 'wp_';
 
 /**
  * For developers: WordPress debugging mode.
@@ -71,20 +72,28 @@ define('WPLANG', '');
  * Change this to true to enable the display of notices during development.
  * It is strongly recommended that plugin and theme developers use WP_DEBUG
  * in their development environments.
+ *
+ * For information on other constants that can be used for debugging,
+ * visit the documentation.
+ *
+ * @link https://developer.wordpress.org/advanced-administration/debug/debug-wordpress/
  */
-define('WP_DEBUG', false);
+define( 'WP_DEBUG', false );
 
-/** Disable Automatic Updates Completely */
+/* Add any custom values between this line and the "stop editing" line. */
+
+/** Define AUTOMATIC Updates Completely. */
 define( 'AUTOMATIC_UPDATER_DISABLED', {{auto_up_disable}} );
 
 /** Define AUTOMATIC Updates for Components. */
 define( 'WP_AUTO_UPDATE_CORE', {{core_update_level}} );
 
-/* That's all, stop editing! Happy blogging. */
+/* That's all, stop editing! Happy publishing. */
 
 /** Absolute path to the WordPress directory. */
-if ( !defined('ABSPATH') )
-  define('ABSPATH', dirname(__FILE__) . '/');
+if ( ! defined( 'ABSPATH' ) ) {
+	define( 'ABSPATH', __DIR__ . '/' );
+}
 
 /** Sets up WordPress vars and included files. */
-require_once(ABSPATH . 'wp-settings.php');
+require_once ABSPATH . 'wp-settings.php';

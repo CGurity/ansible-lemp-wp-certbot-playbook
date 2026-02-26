@@ -10,27 +10,5 @@
     state: present
   become: yes
 
-# Testing - add webroot to command
 - name: Install certificate
-  shell: certbot --nginx -n --agree-tos --redirect --email {{certbot_mail}} -d {{domain}} -d www.{{domain}} --webroot-path /var/www/wordpress/{{ domain }}/
-#   register: site
-
-# - name: Re-create nginx config file (PHP or Wordpress)
-#  template: "src=../templates/php-wordpress-nginx-certbot.conf dest=/etc/nginx/sites-available/{{domain}} owner=www-data group=www-data mode=0644"
-#  notify:
-#    - restart nginx
-#  # become: yes
-#  when: site.stdout == "wordpress" or site.stdout == "php"
-
-# - name: Re-create nginx config file (Static)
-#  template: "src=../templates/static-nginx-certbot.conf dest=/etc/nginx/sites-available/{{domain}} owner=www-data group=www-data mode=0644"
-#  notify:
-#    - restart nginx
-#  become: yes
-#  when: site.stdout == "static"
-
-# - name: Enable site
-#  file: src=/etc/nginx/sites-available/{{domain}} dest=/etc/nginx/sites-enabled/{{domain}} owner=www-data group=www-data state=link
-#  notify:
-#    - restart nginx
-#  become: yes
+  shell: certbot --nginx -n --agree-tos --redirect --email {{certbot_mail}} -d {{domain}}{% if include_www is defined and include_www | bool %} -d www.{{domain}}{% endif %} --webroot-path /var/www/{{ domain }}/
