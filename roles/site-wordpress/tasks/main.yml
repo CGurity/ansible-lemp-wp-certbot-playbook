@@ -43,7 +43,7 @@
   become: yes
 
 - name: Make domain user owner of directory with site
-  file: dest=/var/www/{{domain}} owner={{domain}} group={{domain}} mode=u=rwX,g=rX,o=rX recurse=yes
+  file: dest=/var/www/{{domain}} owner={{domain [:32]}} group={{domain [:32]}} mode=u=rwX,g=rX,o=rX recurse=yes
 
 - name: Re-create nginx config file
   template: "src=../templates/default-site-wordpress-http.conf dest=/etc/nginx/sites-available/{{domain}} owner=www-data group=www-data mode=0644"
@@ -71,13 +71,13 @@
 - name: Initialize Wordpress site
   command: "chdir=/var/www/{{domain}} wp core install --url={{domain}} --title={{domain}} --admin_user={{wpuser}} --admin_password={{ lookup('password', 'credentials/' + domain + '/wp_'+ wpuser +'_password.txt') }} --admin_email={{wpmail}}"
   become: yes
-  become_user: "{{domain}}"
+  become_user: "{{domain [:32]}}"
   become_method: sudo
 
 - name: Install Wordfence
   command: "chdir=/var/www/{{domain}} wp plugin install wordfence --activate"
   become: yes
-  become_user: "{{domain}}"
+  become_user: "{{domain [:32]}}"
   become_method: su
 
 - name: Create cronjob for Wordpress core update
@@ -85,7 +85,7 @@
     name: "{{domain}} wordpress update"
     minute: "40"
     hour: "10"
-    user: "{{domain}}"
+    user: "{{domain [:32]}}"
     job: "/usr/local/bin/wp core update --path=/var/www/{{domain}}/ >> /var/www/update_logs/{{domain}}.log"
 
 - name: Create cronjob for Wordpress plugins update
@@ -93,7 +93,7 @@
     name: "{{domain}} plugins update"
     minute: "50"
     hour: "10"
-    user: "{{domain}}"
+    user: "{{domain [:32]}}"
     job: "/usr/local/bin/wp plugin update --all --path=/var/www/{{domain}}/ >> /var/www/update_logs/{{domain}}.log"
 
 - name: Create cronjob for cleaning logs weekly
@@ -102,7 +102,7 @@
     minute: "0"
     hour: "10"
     weekday: "7"
-    user: "{{domain}}"
+    user: "{{domain [:32]}}"
     job: "/bin/echo '' > /var/www/update_logs/{{domain}}.log"
 
 - name: Store variable with site type

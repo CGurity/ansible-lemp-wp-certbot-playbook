@@ -19,6 +19,7 @@
 - name: Set root user password
   become: true
   become_user: root
+  when: mysql_root_password_change
   mysql_user:
     name: root
     host: "{{ item }}"
@@ -40,9 +41,9 @@
   become: true
   become_user: root
   mysql_user:
-    name: "{{ domain | replace('.','_')| replace('-','_') }}"
+    name: "{{ (domain | replace('.','_')| replace('-','_'))[:32] }}"
     password: "{{ lookup('password', 'credentials/' + domain + '/mysql_user_password.txt') }}"
-    priv: "{{ domain | replace('.','_')| replace('-','_') }}.*:ALL"
+    priv: "{{ (domain | replace('.','_')| replace('-','_'))[:32] }}.*:ALL"
 
 - name: Delete anonymous MySQL server user for localhost
   become: true
@@ -54,6 +55,7 @@
 
 - name: Update mysql root password for all root accounts
   become: true
+  when: mysql_root_password_change
   mysql_user: name=root host={{ item }} password={{ lookup('password', 'credentials/' + domain + '/mysql_root_password.txt') }} priv=*.*:ALL,GRANT
   with_items:
     # - "{{ ansible_hostname }}"

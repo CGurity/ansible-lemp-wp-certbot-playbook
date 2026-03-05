@@ -14,13 +14,13 @@
 
 - name: Create group for the specific domain
   group:
-    name: "{{domain}}"
+    name: "{{domain [:32]}}"
     state: present
 
 - name: Create user for the domain and register it to the correspondent group
   user:
-    name: "{{domain}}"
-    group: "{{domain}}"
+    name: "{{domain [:32]}}"
+    group: "{{domain [:32]}}"
 
 - name: Create php dummy file
   template: "src=../templates/index-php.php dest=/var/www/{{domain}}/index.php owner=www-data group=www-data mode=0644"
@@ -31,7 +31,7 @@
   become: yes
 
 - name: Make domain user owner of directory with site
-  file: dest=/var/www/{{domain}} owner={{domain}} group={{domain}} mode=u=rwX,g=rX,o=rX recurse=yes
+  file: dest=/var/www/{{domain}} owner={{domain [:32]}} group={{domain [:32]}} mode=u=rwX,g=rX,o=rX recurse=yes
   notify:
     - restart nginx
     - restart php-fpm

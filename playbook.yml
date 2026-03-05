@@ -5,8 +5,9 @@
     domain: example.com
     include_www: False
     ansible_port: 22
+    mysql_root_password_change: False
     mysql_port: 3306
-    mysql_root_password: root
+    # mysql_root_password: root ## todelete
     php_version: 8.3 # Check in your server
     # Wordpress config
     auto_up_disable: true
